@@ -7,13 +7,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const process = require('process');
 
-// Configuração do banco de dados
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-// Inicializar Sequelize
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
@@ -21,7 +19,6 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-// Importar modelos
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -49,10 +46,8 @@ db.Sequelize = Sequelize;
 const app = express();
 app.use(bodyParser.json());
 
-// Servir arquivos estáticos da pasta 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rota para criar uma nova pessoa
 app.post('/api/pessoas', async (req, res) => {
   try {
     const pessoa = await db.Pessoa.create(req.body);
@@ -62,7 +57,6 @@ app.post('/api/pessoas', async (req, res) => {
   }
 });
 
-// Rota para listar todas as pessoas
 app.get('/api/pessoas', async (req, res) => {
   try {
     const pessoas = await db.Pessoa.findAll();
